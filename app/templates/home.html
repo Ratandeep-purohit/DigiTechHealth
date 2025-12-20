@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="max-w-6xl mx-auto">
+    <!-- Welcome Header -->
+    <div class="mb-12 text-center lg:text-left">
+        <h1 class="text-3xl lg:text-4xl font-display font-bold text-slate-900 mb-2">Welcome back, <span
+                class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">{{
+                current_user.username }}</span>!</h1>
+        <p class="text-slate-500">Here's what's happening at DigiTechHealth today.</p>
+    </div>
+
+    <!-- Quick Actions Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+
+        <!-- Action 1: Dashboard -->
+        <a href="{{ url_for('main.dashboard') }}"
+            class="group relative p-8 bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1 overflow-hidden">
+            <div
+                class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110">
+            </div>
+            <div class="relative z-10">
+                <div
+                    class="h-14 w-14 bg-primary/10 text-primary rounded-2xl flex items-center justify-center text-2xl mb-6">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">View Dashboard</h3>
+                <p class="text-slate-500 text-sm">Check real-time statistics, patient counts, and revenue reports.</p>
+                <div
+                    class="mt-6 flex items-center text-primary font-bold text-sm group-hover:translate-x-2 transition-transform">
+                    Go to Dashboard <i class="fa-solid fa-arrow-right ml-2"></i>
+                </div>
+            </div>
+        </a>
+
+        <!-- Action 2: Appointments -->
+        <a href="{{ url_for('appointment.list_appointments') }}"
+            class="group relative p-8 bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1 overflow-hidden">
+            <div
+                class="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110">
+            </div>
+            <div class="relative z-10">
+                <div
+                    class="h-14 w-14 bg-secondary/10 text-secondary rounded-2xl flex items-center justify-center text-2xl mb-6">
+                    <i class="fa-regular fa-calendar-plus"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Manage Appointments</h3>
+                <p class="text-slate-500 text-sm">Book new appointments or reschedule existing ones.</p>
+                <div
+                    class="mt-6 flex items-center text-secondary font-bold text-sm group-hover:translate-x-2 transition-transform">
+                    View Schedule <i class="fa-solid fa-arrow-right ml-2"></i>
+                </div>
+            </div>
+        </a>
+
+        <!-- Action 3: Patients -->
+        <a href="{{ url_for('patient.list_patients') }}"
+            class="group relative p-8 bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1 overflow-hidden">
+            <div
+                class="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110">
+            </div>
+            <div class="relative z-10">
+                <div
+                    class="h-14 w-14 bg-accent/10 text-accent rounded-2xl flex items-center justify-center text-2xl mb-6">
+                    <i class="fa-solid fa-user-injured"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Patient Records</h3>
+                <p class="text-slate-500 text-sm">Access patient profiles, medical history, and details.</p>
+                <div
+                    class="mt-6 flex items-center text-accent font-bold text-sm group-hover:translate-x-2 transition-transform">
+                    Find Patient <i class="fa-solid fa-arrow-right ml-2"></i>
+                </div>
+            </div>
+        </a>
+
+        <!-- Action 4: Doctors -->
+        <a href="{{ url_for('doctor.list_doctors') }}"
+            class="group relative p-8 bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1 overflow-hidden">
+            <div
+                class="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110">
+            </div>
+            <div class="relative z-10">
+                <div
+                    class="h-14 w-14 bg-pink-100 text-pink-500 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Doctor Directory</h3>
+                <p class="text-slate-500 text-sm">Browse our medical staff and available specialists.</p>
+                <div
+                    class="mt-6 flex items-center text-pink-500 font-bold text-sm group-hover:translate-x-2 transition-transform">
+                    View Doctors <i class="fa-solid fa-arrow-right ml-2"></i>
+                </div>
+            </div>
+        </a>
+
+        <!-- Action 5: Billing -->
+        <a href="{{ url_for('billing.list_invoices') }}"
+            class="group relative p-8 bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1 overflow-hidden">
+            <div
+                class="absolute top-0 right-0 w-32 h-32 bg-orange-50 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110">
+            </div>
+            <div class="relative z-10">
+                <div
+                    class="h-14 w-14 bg-orange-100 text-orange-500 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Billing & Invoices</h3>
+                <p class="text-slate-500 text-sm">Generate invoices and track hospital payments.</p>
+                <div
+                    class="mt-6 flex items-center text-orange-500 font-bold text-sm group-hover:translate-x-2 transition-transform">
+                    Go to Billing <i class="fa-solid fa-arrow-right ml-2"></i>
+                </div>
+            </div>
+        </a>
+
+        <!-- Action 6: Profile (Conditional) -->
+        {% if current_user.role == 'doctor' %}
+        <a href="{{ url_for('doctor.profile') }}" {% else %} <a href="#"
+            onclick="alert('Profile management is currently available only for Doctors.'); return false;" {% endif %}
+            class="group relative p-8 bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1 overflow-hidden">
+            <div
+                class="absolute top-0 right-0 w-32 h-32 bg-slate-100 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110">
+            </div>
+            <div class="relative z-10">
+                <div
+                    class="h-14 w-14 bg-slate-200 text-slate-600 rounded-2xl flex items-center justify-center text-2xl mb-6">
+                    <i class="fa-solid fa-id-card"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">My Profile</h3>
+                <p class="text-slate-500 text-sm">Update your personal information and settings.</p>
+                <div
+                    class="mt-6 flex items-center text-slate-600 font-bold text-sm group-hover:translate-x-2 transition-transform">
+                    Settings <i class="fa-solid fa-arrow-right ml-2"></i>
+                </div>
+            </div>
+        </a>
+
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="bg-gradient-to-r from-primary to-secondary rounded-3xl p-8 lg:p-12 text-white relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+        <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between">
+            <div class="mb-8 lg:mb-0">
+                <h2 class="text-3xl font-display font-bold mb-2">Hospital Status</h2>
+                <p class="text-blue-100">System is running smooth. Weekly report is ready.</p>
+            </div>
+            <div class="flex space-x-12">
+                <div class="text-center">
+                    <p class="text-4xl font-bold mb-1">{{ new_patients }}</p>
+                    <p class="text-blue-100 text-sm font-medium">New Patients (7d)</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-4xl font-bold mb-1">{{ todays_appointments }}</p>
+                    <p class="text-blue-100 text-sm font-medium">Appointments Today</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-4xl font-bold mb-1">{{ active_doctors }}</p>
+                    <p class="text-blue-100 text-sm font-medium">Active Doctors</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

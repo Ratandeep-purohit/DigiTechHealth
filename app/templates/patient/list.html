@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex justify-between items-center mb-8">
+    <div>
+        <h2 class="text-2xl font-display font-bold text-slate-800">Patient Record</h2>
+        <p class="text-slate-500 text-sm">Manage and view patient history</p>
+    </div>
+    <a href="{{ url_for('patient.add_patient') }}"
+        class="px-5 py-2.5 bg-primary text-white font-bold rounded-lg hover:bg-sky-600 transition-colors shadow-lg shadow-primary/20 flex items-center">
+        <i class="fa-solid fa-plus mr-2"></i> Add Patient
+    </a>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    {% for patient in patients %}
+    <div class="glass p-6 rounded-2xl relative group hover:shadow-lg transition-all border border-slate-200">
+        <div class="flex items-start justify-between">
+            <div class="flex items-center">
+                <div class="h-14 w-14 rounded-full bg-gradient-to-tr from-sky-400 to-indigo-500 p-[2px]">
+                    <div
+                        class="h-full w-full rounded-full bg-white flex items-center justify-center text-xl font-bold text-slate-700">
+                        {{ patient.name[0] }}
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-bold text-slate-800">{{ patient.name }}</h3>
+                    <p class="text-sm text-slate-500">ID: #{{ patient.id }}</p>
+                </div>
+            </div>
+            <div class="dropdown">
+                <button class="text-slate-400 hover:text-primary"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+            </div>
+        </div>
+
+        <div class="mt-6 space-y-3">
+            <div class="flex justify-between text-sm">
+                <span class="text-slate-500">Gender</span>
+                <span class="text-slate-800 font-medium">{{ patient.gender }}</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-slate-500">Age</span>
+                <span class="text-slate-800 font-medium">{{ patient.age }} Years</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-slate-500">Contact</span>
+                <span class="text-slate-800 font-medium">{{ patient.contact }}</span>
+            </div>
+        </div>
+
+        <div class="mt-6 grid grid-cols-2 gap-3">
+            <a href="{{ url_for('patient.update_patient', patient_id=patient.id) }}"
+                class="py-2 rounded-lg bg-slate-100 text-slate-600 text-sm font-medium hover:bg-slate-200 text-center transition-colors">
+                Edit
+            </a>
+            <button
+                class="py-2 rounded-lg border border-slate-300 text-slate-500 text-sm font-medium hover:text-primary hover:border-primary text-center transition-colors">
+                History
+            </button>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-span-full py-12 text-center text-slate-500">
+        <i class="fa-solid fa-users-slash text-5xl mb-4 opacity-50"></i>
+        <p>No patients found. Add one to get started.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

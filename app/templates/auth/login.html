@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="min-h-[calc(100vh-100px)] flex items-center justify-center relative">
+    <!-- Background Decor -->
+    <div
+        class="absolute top-0 left-1/4 w-72 h-72 bg-primary/30 rounded-full mix-blend-multiply filter blur-3xl animate-blob">
+    </div>
+    <div
+        class="absolute bottom-0 right-1/4 w-72 h-72 bg-secondary/30 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000">
+    </div>
+
+    <div class="w-full max-w-md glass p-8 rounded-2xl shadow-xl relative z-10 border border-slate-200 bg-white">
+        <div class="text-center mb-8">
+            <i class="fa-solid fa-staff-snake text-5xl gradient-text mb-4"></i>
+            <h2 class="text-3xl font-display font-bold text-slate-800">DigiTechHealth</h2>
+            <p class="text-slate-500 mt-2">Access the secure medical portal</p>
+        </div>
+
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+
+            <div class="mb-6 group">
+                {{ form.email.label(class="block text-sm font-medium text-slate-600 mb-2") }}
+                <div class="relative">
+                    <span
+                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                        <i class="fa-solid fa-envelope"></i>
+                    </span>
+                    {% if form.email.errors %}
+                    {{ form.email(class="w-full pl-10 pr-3 py-3 bg-slate-50 border border-red-500 rounded-lg
+                    focus:outline-none focus:ring-2 focus:ring-red-500 text-slate-800 placeholder-slate-400
+                    transition-all")
+                    }}
+                    {% else %}
+                    {{ form.email(class="w-full pl-10 pr-3 py-3 bg-slate-50 border border-slate-300 rounded-lg
+                    focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-slate-800
+                    placeholder-slate-400 transition-all", placeholder="name@hospital.com") }}
+                    {% endif %}
+                </div>
+                {% for error in form.email.errors %}
+                <span class="text-xs text-red-500 mt-1 block">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="mb-6 group">
+                {{ form.password.label(class="block text-sm font-medium text-slate-600 mb-2") }}
+                <div class="relative">
+                    <span
+                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                        <i class="fa-solid fa-lock"></i>
+                    </span>
+                    {% if form.password.errors %}
+                    {{ form.password(class="w-full pl-10 pr-3 py-3 bg-slate-50 border border-red-500 rounded-lg
+                    focus:outline-none focus:ring-2 focus:ring-red-500 text-slate-800 placeholder-slate-400
+                    transition-all")
+                    }}
+                    {% else %}
+                    {{ form.password(class="w-full pl-10 pr-3 py-3 bg-slate-50 border border-slate-300 rounded-lg
+                    focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-slate-800
+                    placeholder-slate-400 transition-all", placeholder="••••••••") }}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center">
+                    {{ form.remember(class="w-4 h-4 text-primary bg-slate-50 border-slate-300 rounded
+                    focus:ring-primary") }}
+                    {{ form.remember.label(class="ml-2 text-sm text-slate-600") }}
+                </div>
+                <a href="#" class="text-sm text-primary hover:text-sky-600 transition-colors">Forgot password?</a>
+            </div>
+
+            {{ form.submit(class="w-full py-3 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-lg
+            shadow-lg shadow-primary/30 hover:shadow-primary/50 transform hover:-translate-y-1 transition-all
+            duration-300 cursor-pointer") }}
+
+        </form>
+
+        <div class="mt-8 text-center border-t border-slate-100 pt-6">
+            <p class="text-slate-500 text-sm">Don't have an account? <a href="{{ url_for('auth.register') }}"
+                    class="text-primary font-semibold hover:underline">Sign Up</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

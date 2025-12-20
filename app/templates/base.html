@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% if title %}
+  <title>DigiTechHealth - {{ title }}</title>
+  {% else %}
+  <title>DigiTechHealth System</title>
+  {% endif %}
+
+  <!-- Tailwind CSS (Dev Mode) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0ea5e9', /* Sky 500 */
+            secondary: '#6366f1', /* Indigo 500 */
+            accent: '#10b981', /* Emerald 500 */
+            dark: '#0f172a',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Orbitron', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700&display=swap"
+    rel="stylesheet">
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+  <style>
+    body {
+      background-color: #f8fafc;
+      /* Slate 50 */
+      background-image:
+        radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.1) 0, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.1) 0, transparent 50%);
+      color: #1e293b;
+      /* Slate 800 */
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+  </style>
+</head>
+
+<body class="overflow-x-hidden">
+
+  <div class="min-h-screen flex flex-col">
+    <!-- Top Navbar (Fixed) -->
+    {% if current_user.is_authenticated %}
+    <nav class="glass sticky top-0 z-50 px-6 py-3 flex justify-between items-center">
+      <!-- Brand -->
+      <div class="flex items-center">
+        <i class="fa-solid fa-staff-snake text-3xl gradient-text mr-3"></i>
+        <a href="{{ url_for('main.home') }}" class="text-xl font-display font-bold text-slate-800 tracking-wider">
+          DigiTech<span class="text-primary">Health</span>
+        </a>
+      </div>
+
+      <!-- Links -->
+      <div class="hidden lg:flex items-center space-x-6">
+        <a href="{{ url_for('main.home') }}"
+          class="font-medium text-slate-600 hover:text-primary transition-colors {{ 'text-primary' if request.endpoint == 'main.home' }}">Home</a>
+        <a href="{{ url_for('main.dashboard') }}"
+          class="font-medium text-slate-600 hover:text-primary transition-colors {{ 'text-primary' if request.endpoint == 'main.dashboard' }}">Dashboard</a>
+        <a href="{{ url_for('appointment.list_appointments') }}"
+          class="font-medium text-slate-600 hover:text-primary transition-colors {{ 'text-primary' in request.endpoint and 'appointment' in request.endpoint }}">Appointments</a>
+        <a href="{{ url_for('patient.list_patients') }}"
+          class="font-medium text-slate-600 hover:text-primary transition-colors {{ 'text-primary' in request.endpoint and 'patient' in request.endpoint }}">Patients</a>
+        <a href="{{ url_for('billing.list_invoices') }}"
+          class="font-medium text-slate-600 hover:text-primary transition-colors {{ 'text-primary' in request.endpoint and 'billing' in request.endpoint }}">Billing</a>
+        <a href="{{ url_for('doctor.list_doctors') }}"
+          class="font-medium text-slate-600 hover:text-primary transition-colors {{ 'text-primary' in request.endpoint and 'doctor' in request.endpoint }}">Doctors</a>
+      </div>
+
+      <!-- User Menu -->
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-2">
+          <div class="h-8 w-8 rounded-full bg-gradient-to-r from-primary to-secondary p-[2px]">
+            <div class="h-full w-full rounded-full bg-white flex items-center justify-center">
+              <span class="text-xs font-bold text-slate-800">{{ current_user.username[0]|upper }}</span>
+            </div>
+          </div>
+          <span class="hidden md:block font-medium text-sm">{{ current_user.username }}</span>
+        </div>
+        <a href="{{ url_for('auth.logout') }}" class="text-slate-400 hover:text-red-500 transition-colors"
+          title="Logout">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </a>
+      </div>
+    </nav>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="flex-1 container mx-auto px-4 py-8">
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div id="flash-messages" class="mb-6 space-y-2 max-w-4xl mx-auto">
+        {% for category, message in messages %}
+        <div class="px-4 py-3 rounded-lg border flex items-center justify-between shadow-sm
+                                    {% if category == 'success' %} bg-green-50 border-green-200 text-green-700
+                                    {% elif category == 'danger' %} bg-red-50 border-red-200 text-red-700
+                                    {% else %} bg-blue-50 border-blue-200 text-blue-700 {% endif %}">
+          <span>{{ message }}</span>
+          <button onclick="this.parentElement.remove()" class="text-sm opacity-70 hover:opacity-100"><i
+              class="fa-solid fa-xmark"></i></button>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endwith %}
+
+      <div class="fade-in-up">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-auto">
+      <div class="container mx-auto px-4 text-center text-slate-500 text-sm">
+        &copy; 2025 DigiTechHealth System. All rights reserved.
+      </div>
+    </footer>
+  </div>
+
+  <!-- JS for Animations -->
+  <script>
+    // GSAP Animations
+    gsap.from(".fade-in-up", {
+      duration: 0.6,
+      y: 20,
+      opacity: 0,
+      ease: "power2.out",
+      delay: 0.1
+    });
+
+    // Flash Message Auto Dismiss
+    setTimeout(() => {
+      const flash = document.getElementById('flash-messages');
+      if (flash) {
+        gsap.to(flash, { opacity: 0, y: -20, duration: 0.5, onComplete: () => flash.remove() });
+      }
+    }, 4000);
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+
+</html>

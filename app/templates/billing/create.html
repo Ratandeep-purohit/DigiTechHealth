@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex justify-center">
+    <div class="w-full max-w-2xl glass rounded-2xl p-8 border border-slate-200 bg-white">
+        <div class="mb-8 border-b border-slate-100 pb-4">
+            <h2 class="text-2xl font-display font-bold text-slate-800">Generate Invoice</h2>
+            <p class="text-slate-500 text-sm">Create a new bill for a patient</p>
+        </div>
+
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+
+            <div class="mb-6">
+                {{ form.patient.label(class="block text-sm font-medium text-slate-700 mb-2") }}
+                {{ form.patient(class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-slate-800
+                focus:outline-none focus:ring-2 focus:ring-primary appearance-none") }}
+            </div>
+
+            <div class="mb-6">
+                {{ form.description.label(class="block text-sm font-medium text-slate-700 mb-2") }}
+                {{ form.description(class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3
+                text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary", placeholder="Consultation fees,
+                medicines, etc.") }}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                    {{ form.amount.label(class="block text-sm font-medium text-slate-700 mb-2") }}
+                    <div class="relative">
+                        <span class="absolute left-4 top-3 text-slate-400">$</span>
+                        {{ form.amount(class="w-full bg-slate-50 border border-slate-300 rounded-lg pl-8 pr-4 py-3
+                        text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary") }}
+                    </div>
+                </div>
+                <div>
+                    {{ form.status.label(class="block text-sm font-medium text-slate-700 mb-2") }}
+                    {{ form.status(class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-slate-800
+                    focus:outline-none focus:ring-2 focus:ring-primary appearance-none") }}
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                {{ form.submit(class="flex-1 py-3 bg-orange-500 text-white font-bold rounded-lg shadow-lg
+                hover:bg-orange-600 transition-colors cursor-pointer shadow-orange-500/20") }}
+                <a href="{{ url_for('billing.list_invoices') }}"
+                    class="px-6 py-3 border border-slate-300 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors">Cancel</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endblock %}
