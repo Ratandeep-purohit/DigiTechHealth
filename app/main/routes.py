@@ -1,10 +1,14 @@
-from flask import render_template, jsonify
+from flask import render_template, request, flash, redirect, url_for, current_app, jsonify
 from app.main import main
+from app.main.forms import UpdateAccountForm
 from app.models import User, Patient, Appointment, Doctor, Invoice
 from app import db
 from sqlalchemy import func
 import datetime
-from flask_login import login_required
+import secrets
+import os
+from PIL import Image
+from flask_login import login_required, current_user
 
 @main.route("/")
 def index():
@@ -92,3 +96,36 @@ def dashboard_stats():
         'doctors': doctor_count,
         'revenue': int(revenue)
     })
+
+def save_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(current_app.root_path, 'static/profile_pics', picture_fn)
+
+    output_size = (125, 125)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+    i.save(picture_path)
+
+    return picture_fn
+
+@main.route("/account", methods=['GET', 'POST'])
+@login_required
+def account():
+    form = UpdateAccountForm()
+    if form.validate_on_submit():
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            current_user.image_file = picture_file
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash('Your account has been updated!', 'success')
+        return redirect(url_for('main.account'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+    image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
+    return render_template('main/account.html', title='Account',
+                           image_file=image_file, form=form)

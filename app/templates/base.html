@@ -92,14 +92,16 @@
 
       <!-- User Menu -->
       <div class="flex items-center space-x-4">
-        <div class="flex items-center space-x-2">
-          <div class="h-8 w-8 rounded-full bg-gradient-to-r from-primary to-secondary p-[2px]">
-            <div class="h-full w-full rounded-full bg-white flex items-center justify-center">
-              <span class="text-xs font-bold text-slate-800">{{ current_user.username[0]|upper }}</span>
-            </div>
+        <a href="{{ url_for('main.account') }}" class="flex items-center space-x-2 group">
+          <div class="relative">
+            <img
+              class="h-9 w-9 rounded-full object-cover border-2 border-primary group-hover:border-secondary transition-colors"
+              src="{{ url_for('static', filename='profile_pics/' + current_user.image_file) }}"
+              alt="{{ current_user.username }}">
           </div>
-          <span class="hidden md:block font-medium text-sm">{{ current_user.username }}</span>
-        </div>
+          <span class="hidden md:block font-medium text-sm text-slate-700 group-hover:text-primary transition-colors">{{
+            current_user.username }}</span>
+        </a>
         <a href="{{ url_for('auth.logout') }}" class="text-slate-400 hover:text-red-500 transition-colors"
           title="Logout">
           <i class="fa-solid fa-right-from-bracket"></i>
