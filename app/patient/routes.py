@@ -3,6 +3,7 @@ from app import db
 from app.patient import patient
 from app.patient.forms import PatientForm
 from app.models import Patient
+from app.utils import save_picture
 from flask_login import login_required, current_user
 
 @patient.route("/patients")
@@ -16,9 +17,13 @@ def list_patients():
 def add_patient():
     form = PatientForm()
     if form.validate_on_submit():
+        image_file = 'default.jpg'
+        if form.picture.data:
+            image_file = save_picture(form.picture.data)
+            
         patient = Patient(name=form.name.data, age=form.age.data, gender=form.gender.data,
                           contact=form.contact.data, address=form.address.data,
-                          medical_history=form.medical_history.data)
+                          medical_history=form.medical_history.data, image_file=image_file)
         db.session.add(patient)
         db.session.commit()
         flash('Patient has been added!', 'success')
@@ -31,6 +36,9 @@ def update_patient(patient_id):
     patient = Patient.query.get_or_404(patient_id)
     form = PatientForm()
     if form.validate_on_submit():
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            patient.image_file = picture_file
         patient.name = form.name.data
         patient.age = form.age.data
         patient.gender = form.gender.data

@@ -16,11 +16,9 @@
     <div class="glass p-6 rounded-2xl relative group hover:shadow-lg transition-all border border-slate-200">
         <div class="flex items-start justify-between">
             <div class="flex items-center">
-                <div class="h-14 w-14 rounded-full bg-gradient-to-tr from-sky-400 to-indigo-500 p-[2px]">
-                    <div
-                        class="h-full w-full rounded-full bg-white flex items-center justify-center text-xl font-bold text-slate-700">
-                        {{ patient.name[0] }}
-                    </div>
+                <div class="h-14 w-14 rounded-full border-2 border-indigo-100 overflow-hidden">
+                    <img src="{{ url_for('static', filename='profile_pics/' + patient.image_file) }}"
+                        alt="{{ patient.name }}" class="h-full w-full object-cover">
                 </div>
                 <div class="ml-4">
                     <h3 class="text-lg font-bold text-slate-800">{{ patient.name }}</h3>

@@ -32,6 +32,7 @@ class Patient(db.Model):
     contact = db.Column(db.String(15), nullable=False)
     address = db.Column(db.Text, nullable=False)
     medical_history = db.Column(db.Text, nullable=True)
+    image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     date_created = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
 
     def __repr__(self):
