@@ -26,14 +26,17 @@ class User(db.Model, UserMixin):
 
 class Patient(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True) # Optional link to User account
     name = db.Column(db.String(100), nullable=False)
-    age = db.Column(db.Integer, nullable=False)
-    gender = db.Column(db.String(10), nullable=False)
-    contact = db.Column(db.String(15), nullable=False)
-    address = db.Column(db.Text, nullable=False)
+    age = db.Column(db.Integer, nullable=True)
+    gender = db.Column(db.String(10), nullable=True)
+    contact = db.Column(db.String(15), nullable=True)
+    address = db.Column(db.Text, nullable=True)
     medical_history = db.Column(db.Text, nullable=True)
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     date_created = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+
+    user = db.relationship('User', backref=db.backref('patient_profile', uselist=False))
 
     def __repr__(self):
         return f"Patient('{self.name}', '{self.age}')"

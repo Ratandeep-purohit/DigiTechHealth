@@ -50,10 +50,10 @@
                 class="py-2 rounded-lg bg-slate-100 text-slate-600 text-sm font-medium hover:bg-slate-200 text-center transition-colors">
                 Edit
             </a>
-            <button
+            <a href="{{ url_for('patient.view_patient', patient_id=patient.id) }}"
                 class="py-2 rounded-lg border border-slate-300 text-slate-500 text-sm font-medium hover:text-primary hover:border-primary text-center transition-colors">
                 History
-            </button>
+            </a>
         </div>
     </div>
     {% else %}

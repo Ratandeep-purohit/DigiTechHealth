@@ -13,6 +13,7 @@
     <!-- Quick Actions Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
 
+        {% if current_user.role in ['admin', 'doctor', 'receptionist'] %}
         <!-- Action 1: Dashboard -->
         <a href="{{ url_for('main.dashboard') }}"
             class="group relative p-8 bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1 overflow-hidden">
@@ -32,6 +33,7 @@
                 </div>
             </div>
         </a>
+        {% endif %}
 
         <!-- Action 2: Appointments -->
         <a href="{{ url_for('appointment.list_appointments') }}"
@@ -44,8 +46,11 @@
                     class="h-14 w-14 bg-secondary/10 text-secondary rounded-2xl flex items-center justify-center text-2xl mb-6">
                     <i class="fa-regular fa-calendar-plus"></i>
                 </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2">Manage Appointments</h3>
-                <p class="text-slate-500 text-sm">Book new appointments or reschedule existing ones.</p>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">{{ 'Manage Appointments' if current_user.role in
+                    ['admin', 'doctor', 'receptionist'] else 'My Appointments' }}</h3>
+                <p class="text-slate-500 text-sm">{{ 'Book new appointments or reschedule existing ones.' if
+                    current_user.role in ['admin', 'doctor', 'receptionist'] else 'View and schedule your medical
+                    consultations.' }}</p>
                 <div
                     class="mt-6 flex items-center text-secondary font-bold text-sm group-hover:translate-x-2 transition-transform">
                     View Schedule <i class="fa-solid fa-arrow-right ml-2"></i>
@@ -53,7 +58,7 @@
             </div>
         </a>
 
-        <!-- Action 3: Patients -->
+        <!-- Action 3: Patients / My Profile -->
         <a href="{{ url_for('patient.list_patients') }}"
             class="group relative p-8 bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1 overflow-hidden">
             <div
@@ -64,16 +69,21 @@
                     class="h-14 w-14 bg-accent/10 text-accent rounded-2xl flex items-center justify-center text-2xl mb-6">
                     <i class="fa-solid fa-user-injured"></i>
                 </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2">Patient Records</h3>
-                <p class="text-slate-500 text-sm">Access patient profiles, medical history, and details.</p>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">{{ 'Patient Records' if current_user.role in ['admin',
+                    'doctor', 'receptionist'] else 'My Medical Profile' }}</h3>
+                <p class="text-slate-500 text-sm">{{ 'Access patient profiles, medical history, and details.' if
+                    current_user.role in ['admin', 'doctor', 'receptionist'] else 'View your personal medical record and
+                    history.' }}</p>
                 <div
                     class="mt-6 flex items-center text-accent font-bold text-sm group-hover:translate-x-2 transition-transform">
-                    Find Patient <i class="fa-solid fa-arrow-right ml-2"></i>
+                    {{ 'Find Patient' if current_user.role in ['admin', 'doctor', 'receptionist'] else 'View Profile' }}
+                    <i class="fa-solid fa-arrow-right ml-2"></i>
                 </div>
             </div>
         </a>
 
-        <!-- Action 4: Doctors -->
+        {% if current_user.role in ['admin', 'receptionist'] %}
+        <!-- Action 4: Doctors Management -->
         <a href="{{ url_for('doctor.list_doctors') }}"
             class="group relative p-8 bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1 overflow-hidden">
             <div
@@ -84,14 +94,15 @@
                     class="h-14 w-14 bg-pink-100 text-pink-500 rounded-2xl flex items-center justify-center text-2xl mb-6">
                     <i class="fa-solid fa-user-doctor"></i>
                 </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2">Doctor Directory</h3>
-                <p class="text-slate-500 text-sm">Browse our medical staff and available specialists.</p>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Manage Doctors</h3>
+                <p class="text-slate-500 text-sm">Add or update medical staff information.</p>
                 <div
                     class="mt-6 flex items-center text-pink-500 font-bold text-sm group-hover:translate-x-2 transition-transform">
                     View Doctors <i class="fa-solid fa-arrow-right ml-2"></i>
                 </div>
             </div>
         </a>
+        {% endif %}
 
         <!-- Action 5: Billing -->
         <a href="{{ url_for('billing.list_invoices') }}"
@@ -104,19 +115,21 @@
                     class="h-14 w-14 bg-orange-100 text-orange-500 rounded-2xl flex items-center justify-center text-2xl mb-6">
                     <i class="fa-solid fa-file-invoice-dollar"></i>
                 </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2">Billing & Invoices</h3>
-                <p class="text-slate-500 text-sm">Generate invoices and track hospital payments.</p>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">{{ 'Billing & Invoices' if current_user.role in
+                    ['admin', 'doctor', 'receptionist'] else 'My Invoices' }}</h3>
+                <p class="text-slate-500 text-sm">{{ 'Generate invoices and track hospital payments.' if
+                    current_user.role in ['admin', 'doctor', 'receptionist'] else 'View and manage your outstanding
+                    bills.' }}</p>
                 <div
                     class="mt-6 flex items-center text-orange-500 font-bold text-sm group-hover:translate-x-2 transition-transform">
-                    Go to Billing <i class="fa-solid fa-arrow-right ml-2"></i>
+                    {{ 'Go to Billing' if current_user.role in ['admin', 'doctor', 'receptionist'] else 'View Invoices'
+                    }} <i class="fa-solid fa-arrow-right ml-2"></i>
                 </div>
             </div>
         </a>
 
-        <!-- Action 6: Profile (Conditional) -->
-        {% if current_user.role == 'doctor' %}
-        <a href="{{ url_for('doctor.profile') }}" {% else %} <a href="#"
-            onclick="alert('Profile management is currently available only for Doctors.'); return false;" {% endif %}
+        <!-- Action 6: My Settings -->
+        <a href="{{ url_for('main.account') }}"
             class="group relative p-8 bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all hover:-translate-y-1 overflow-hidden">
             <div
                 class="absolute top-0 right-0 w-32 h-32 bg-slate-100 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110">
@@ -126,8 +139,8 @@
                     class="h-14 w-14 bg-slate-200 text-slate-600 rounded-2xl flex items-center justify-center text-2xl mb-6">
                     <i class="fa-solid fa-id-card"></i>
                 </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2">My Profile</h3>
-                <p class="text-slate-500 text-sm">Update your personal information and settings.</p>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Account Settings</h3>
+                <p class="text-slate-500 text-sm">Update your personal information and login details.</p>
                 <div
                     class="mt-6 flex items-center text-slate-600 font-bold text-sm group-hover:translate-x-2 transition-transform">
                     Settings <i class="fa-solid fa-arrow-right ml-2"></i>
@@ -137,7 +150,8 @@
 
     </div>
 
-    <!-- Quick Stats -->
+    {% if current_user.role in ['admin', 'doctor', 'receptionist'] %}
+    <!-- Quick Stats (Staff Only) -->
     <div class="bg-gradient-to-r from-primary to-secondary rounded-3xl p-8 lg:p-12 text-white relative overflow-hidden">
         <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
         <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between">
@@ -161,5 +175,17 @@
             </div>
         </div>
     </div>
+    {% else %}
+    <!-- Patient Welcome (Patient Only) -->
+    <div class="bg-gradient-to-r from-accent to-primary rounded-3xl p-8 lg:p-12 text-white relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+        <div class="relative z-10">
+            <h2 class="text-3xl font-display font-bold mb-4">Your Health, Our Priority</h2>
+            <p class="max-w-2xl text-blue-50">Welcome to your personal health portal. You can book appointments with our
+                top specialists, view your medical history, and manage your billing all in one place. If you have any
+                questions, feel free to contact our support team.</p>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

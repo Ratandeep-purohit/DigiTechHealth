@@ -8,7 +8,21 @@ from flask_login import login_required
 @billing.route("/invoices")
 @login_required
 def list_invoices():
-    invoices = Invoice.query.all()
+    if current_user.role == 'admin' or current_user.role == 'receptionist':
+        invoices = Invoice.query.all()
+    elif current_user.role == 'doctor':
+        # Doctors might see all or none? Usually staff sees all. 
+        # For now, let's say staff (admin/receptionist) manages billing.
+        # But if doctors want to see, they can. Let's allow doctors too for now.
+        invoices = Invoice.query.all()
+    else:
+        # Patient
+        patient = Patient.query.filter_by(user_id=current_user.id).first()
+        if patient:
+            invoices = Invoice.query.filter_by(patient_id=patient.id).all()
+        else:
+            invoices = []
+            
     return render_template('billing/list.html', invoices=invoices)
 
 @billing.route("/invoice/new", methods=['GET', 'POST'])

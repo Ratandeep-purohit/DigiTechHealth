@@ -5,6 +5,7 @@ from app.models import Doctor
 
 class AppointmentForm(FlaskForm):
     doctor = SelectField('Doctor', coerce=int, validators=[DataRequired()])
+    patient = SelectField('Patient', coerce=int, validators=[DataRequired()])
     date_time = DateTimeLocalField('Date & Time', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
     reason = TextAreaField('Reason for Visit', validators=[DataRequired()])
     submit = SubmitField('Book Appointment')

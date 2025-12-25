@@ -15,6 +15,19 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
+        
+        # Create corresponding profile
+        if user.role == 'patient':
+            from app.models import Patient
+            patient = Patient(user_id=user.id, name=user.username)
+            db.session.add(patient)
+            db.session.commit()
+        elif user.role == 'doctor':
+            from app.models import Doctor
+            doctor = Doctor(user_id=user.id, specialization="General", availability="Mon-Fri 9am-5pm")
+            db.session.add(doctor)
+            db.session.commit()
+            
         flash('Your account has been created! You can now log in.', 'success')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', title='Register', form=form)

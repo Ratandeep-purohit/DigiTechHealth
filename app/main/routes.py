@@ -40,6 +40,10 @@ def home():
 @main.route("/dashboard")
 @login_required
 def dashboard():
+    if current_user.role not in ['admin', 'doctor', 'receptionist']:
+        flash('Access denied.', 'danger')
+        return redirect(url_for('main.home'))
+        
     # Counts
     patient_count = Patient.query.count()
     appointment_count = Appointment.query.count()
@@ -85,6 +89,9 @@ def dashboard():
 @main.route("/api/dashboard/stats")
 @login_required
 def dashboard_stats():
+    if current_user.role not in ['admin', 'doctor', 'receptionist']:
+        return jsonify({'error': 'Unauthorized'}), 401
+        
     patient_count = Patient.query.count()
     appointment_count = Appointment.query.count()
     doctor_count = Doctor.query.count()

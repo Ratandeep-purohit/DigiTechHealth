@@ -78,16 +78,29 @@
       <div class="hidden lg:flex items-center space-x-6">
         <a href="{{ url_for('main.home') }}"
           class="font-medium text-slate-600 hover:text-primary transition-colors {{ 'text-primary' if request.endpoint == 'main.home' }}">Home</a>
+
+        {% if current_user.role in ['admin', 'doctor', 'receptionist'] %}
         <a href="{{ url_for('main.dashboard') }}"
           class="font-medium text-slate-600 hover:text-primary transition-colors {{ 'text-primary' if request.endpoint == 'main.dashboard' }}">Dashboard</a>
+        {% endif %}
+
         <a href="{{ url_for('appointment.list_appointments') }}"
           class="font-medium text-slate-600 hover:text-primary transition-colors {{ 'text-primary' in request.endpoint and 'appointment' in request.endpoint }}">Appointments</a>
+
         <a href="{{ url_for('patient.list_patients') }}"
-          class="font-medium text-slate-600 hover:text-primary transition-colors {{ 'text-primary' in request.endpoint and 'patient' in request.endpoint }}">Patients</a>
+          class="font-medium text-slate-600 hover:text-primary transition-colors {{ 'text-primary' in request.endpoint and 'patient' in request.endpoint }}">
+          {{ 'Patients' if current_user.role in ['admin', 'doctor', 'receptionist'] else 'My Profile' }}
+        </a>
+
         <a href="{{ url_for('billing.list_invoices') }}"
-          class="font-medium text-slate-600 hover:text-primary transition-colors {{ 'text-primary' in request.endpoint and 'billing' in request.endpoint }}">Billing</a>
+          class="font-medium text-slate-600 hover:text-primary transition-colors {{ 'text-primary' in request.endpoint and 'billing' in request.endpoint }}">
+          {{ 'Billing' if current_user.role in ['admin', 'doctor', 'receptionist'] else 'My Invoices' }}
+        </a>
+
+        {% if current_user.role in ['admin', 'doctor', 'receptionist'] %}
         <a href="{{ url_for('doctor.list_doctors') }}"
           class="font-medium text-slate-600 hover:text-primary transition-colors {{ 'text-primary' in request.endpoint and 'doctor' in request.endpoint }}">Doctors</a>
+        {% endif %}
       </div>
 
       <!-- User Menu -->

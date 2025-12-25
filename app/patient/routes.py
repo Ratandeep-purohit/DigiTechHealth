@@ -9,8 +9,27 @@ from flask_login import login_required, current_user
 @patient.route("/patients")
 @login_required
 def list_patients():
-    patients = Patient.query.all()
-    return render_template('patient/list.html', patients=patients)
+    if current_user.role in ['admin', 'doctor', 'receptionist']:
+        patients = Patient.query.all()
+        return render_template('patient/list.html', patients=patients)
+    else:
+        # Patient redirected to their own profile
+        patient_record = Patient.query.filter_by(user_id=current_user.id).first()
+        if patient_record:
+            return redirect(url_for('patient.view_patient', patient_id=patient_record.id))
+        else:
+            flash('No patient record found for your account.', 'warning')
+            return redirect(url_for('main.home'))
+
+@patient.route("/patient/<int:patient_id>")
+@login_required
+def view_patient(patient_id):
+    patient_record = Patient.query.get_or_404(patient_id)
+    # Authorization check
+    if current_user.role not in ['admin', 'doctor', 'receptionist']:
+        if patient_record.user_id != current_user.id:
+            abort(403)
+    return render_template('patient/view.html', patient=patient_record, title='Patient Details')
 
 @patient.route("/patient/new", methods=['GET', 'POST'])
 @login_required

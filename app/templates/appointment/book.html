@@ -22,6 +22,12 @@
             </div>
 
             <div class="mb-6">
+                {{ form.patient.label(class="block text-sm font-medium text-slate-700 mb-2") }}
+                {{ form.patient(class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-3 text-slate-800
+                focus:outline-none focus:ring-2 focus:ring-primary appearance-none") }}
+            </div>
+
+            <div class="mb-6">
                 {{ form.date_time.label(class="block text-sm font-medium text-slate-700 mb-2") }}
                 {% if form.date_time.errors %}
                 {{ form.date_time(class="w-full bg-slate-50 border border-red-500 rounded-lg px-4 py-3 text-slate-800
