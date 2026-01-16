@@ -20,24 +20,24 @@
             {{ form.hidden_tag() }}
 
             <div class="mb-6 group">
-                {{ form.email.label(class="block text-sm font-medium text-slate-600 mb-2") }}
+                {{ form.login_id.label(class="block text-sm font-medium text-slate-600 mb-2") }}
                 <div class="relative">
                     <span
                         class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
-                        <i class="fa-solid fa-envelope"></i>
+                        <i class="fa-solid fa-user"></i>
                     </span>
-                    {% if form.email.errors %}
-                    {{ form.email(class="w-full pl-10 pr-3 py-3 bg-slate-50 border border-red-500 rounded-lg
+                    {% if form.login_id.errors %}
+                    {{ form.login_id(class="w-full pl-10 pr-3 py-3 bg-slate-50 border border-red-500 rounded-lg
                     focus:outline-none focus:ring-2 focus:ring-red-500 text-slate-800 placeholder-slate-400
                     transition-all")
                     }}
                     {% else %}
-                    {{ form.email(class="w-full pl-10 pr-3 py-3 bg-slate-50 border border-slate-300 rounded-lg
+                    {{ form.login_id(class="w-full pl-10 pr-3 py-3 bg-slate-50 border border-slate-300 rounded-lg
                     focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-slate-800
-                    placeholder-slate-400 transition-all", placeholder="name@hospital.com") }}
+                    placeholder-slate-400 transition-all", placeholder="Email or Username") }}
                     {% endif %}
                 </div>
-                {% for error in form.email.errors %}
+                {% for error in form.login_id.errors %}
                 <span class="text-xs text-red-500 mt-1 block">{{ error }}</span>
                 {% endfor %}
             </div>

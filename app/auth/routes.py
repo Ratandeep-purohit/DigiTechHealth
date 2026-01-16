@@ -38,13 +38,14 @@ def login():
         return redirect(url_for('main.dashboard'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        # Check if login_id is an email or username
+        user = User.query.filter((User.email == form.login_id.data) | (User.username == form.login_id.data)).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('main.home'))
+            return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
         else:
-            flash('Login Unsuccessful. Please check email and password', 'danger')
+            flash('Login Unsuccessful. Please check email/username and password', 'danger')
     return render_template('auth/login.html', title='Login', form=form)
 
 @auth.route("/logout")

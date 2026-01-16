@@ -26,7 +26,18 @@
 
             <div>
                 <div class="flex items-center mb-1">
+                    {% if current_user.role == 'doctor' %}
+                    <h3 class="text-lg font-bold text-slate-800 mr-3">
+                        {% if apt.patient %}
+                        {{ apt.patient.name }}
+                        {% else %}
+                        <span class="text-slate-400 italic">Unknown Patient</span>
+                        {% endif %}
+                    </h3>
+                    {% else %}
                     <h3 class="text-lg font-bold text-slate-800 mr-3">Dr. {{ apt.doctor.user.username }}</h3>
+                    {% endif %}
+
                     <span class="text-xs px-2 py-0.5 rounded border font-medium
                         {% if apt.status == 'Scheduled' %} border-yellow-500 text-yellow-600 bg-yellow-50 
                         {% elif apt.status == 'Completed' %} border-green-500 text-green-600 bg-green-50 
@@ -45,14 +56,18 @@
             </div>
 
             <div class="flex space-x-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                <button
+                <a href="{{ url_for('appointment.update_appointment', appointment_id=apt.id) }}"
                     class="h-8 w-8 rounded-lg bg-slate-100 text-slate-500 hover:bg-primary hover:text-white transition-colors flex items-center justify-center">
                     <i class="fa-solid fa-pen"></i>
-                </button>
-                <button
-                    class="h-8 w-8 rounded-lg bg-slate-100 text-slate-500 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
+                </a>
+                <form action="{{ url_for('appointment.delete_appointment', appointment_id=apt.id) }}" method="POST"
+                    class="inline">
+                    <button type="button"
+                        onclick="if(confirm('Are you sure you want to cancel this appointment?')) this.form.submit();"
+                        class="h-8 w-8 rounded-lg bg-slate-100 text-slate-500 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </form>
             </div>
         </div>
 

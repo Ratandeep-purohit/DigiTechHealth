@@ -25,8 +25,30 @@
                     <p class="text-sm text-slate-500">ID: #{{ patient.id }}</p>
                 </div>
             </div>
-            <div class="dropdown">
-                <button class="text-slate-400 hover:text-primary"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+            <div class="relative dropdown-container">
+                <button onclick="toggleDropdown(this)"
+                    class="text-slate-400 hover:text-primary px-2 py-1 focus:outline-none transition-colors">
+                    <i class="fa-solid fa-ellipsis-vertical pointer-events-none"></i>
+                </button>
+                <div
+                    class="dropdown-menu hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 z-20 overflow-hidden">
+                    <a href="{{ url_for('patient.update_patient', patient_id=patient.id) }}"
+                        class="block px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-primary text-left transition-colors border-b border-slate-50">
+                        <i class="fa-solid fa-pen mr-2"></i> Edit
+                    </a>
+                    <a href="{{ url_for('patient.view_patient', patient_id=patient.id) }}"
+                        class="block px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-primary text-left transition-colors border-b border-slate-50">
+                        <i class="fa-solid fa-file-medical mr-2"></i> History
+                    </a>
+                    <form action="{{ url_for('patient.delete_patient', patient_id=patient.id) }}" method="POST"
+                        class="block">
+                        <button type="button"
+                            onclick="if(confirm('Are you sure you want to delete this patient? This action cannot be undone.')) this.form.submit()"
+                            class="w-full block px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 text-left transition-colors">
+                            <i class="fa-solid fa-trash mr-2"></i> Delete
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -63,4 +85,35 @@
     </div>
     {% endfor %}
 </div>
+
+<script>
+    function toggleDropdown(btn) {
+        // Prevent event bubbling if needed, though click.away handles closure
+        event.stopPropagation();
+
+        const menu = btn.nextElementSibling;
+        const isHidden = menu.classList.contains('hidden');
+
+        // Close all other dropdowns first
+        document.querySelectorAll('.dropdown-menu').forEach(el => {
+            el.classList.add('hidden');
+        });
+
+        // Toggle current
+        if (isHidden) {
+            menu.classList.remove('hidden');
+        } else {
+            menu.classList.add('hidden');
+        }
+    }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.dropdown-container')) {
+            document.querySelectorAll('.dropdown-menu').forEach(el => {
+                el.classList.add('hidden');
+            });
+        }
+    });
+</script>
 {% endblock %}

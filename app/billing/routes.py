@@ -3,7 +3,7 @@ from app import db
 from app.billing import billing
 from app.billing.forms import InvoiceForm
 from app.models import Invoice, Patient
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 @billing.route("/invoices")
 @login_required

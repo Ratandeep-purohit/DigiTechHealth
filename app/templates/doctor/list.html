@@ -1,8 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="mb-8">
-    <h2 class="text-2xl font-display font-bold text-slate-800">Medical Specialists</h2>
-    <p class="text-slate-500 text-sm">Find the right doctor for your needs</p>
+<div class="flex justify-between items-center mb-8">
+    <div>
+        <h2 class="text-2xl font-display font-bold text-slate-800">Medical Specialists</h2>
+        <p class="text-slate-500 text-sm">Find the right doctor for your needs</p>
+    </div>
+    {% if current_user.role == 'admin' %}
+    <a href="{{ url_for('doctor.add_doctor') }}"
+        class="px-5 py-2.5 bg-primary text-white font-bold rounded-lg hover:bg-sky-600 transition-colors shadow-lg shadow-primary/20 flex items-center">
+        <i class="fa-solid fa-user-doctor mr-2"></i> Add Doctor
+    </a>
+    {% endif %}
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -10,6 +18,31 @@
     <div
         class="glass rounded-2xl overflow-hidden group border border-slate-200 bg-white hover:shadow-xl transition-all">
         <div class="h-32 bg-gradient-to-br from-sky-50 to-indigo-50 relative">
+            {% if current_user.role == 'admin' %}
+            <div class="absolute top-3 right-3 z-10">
+                <div class="relative dropdown-container">
+                    <button onclick="toggleDropdown(this)"
+                        class="bg-white/80 backdrop-blur-sm p-1.5 rounded-lg text-slate-500 hover:text-primary transition-colors shadow-sm">
+                        <i class="fa-solid fa-ellipsis-vertical pointer-events-none"></i>
+                    </button>
+                    <div
+                        class="dropdown-menu hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 z-20 overflow-hidden">
+                        <a href="{{ url_for('doctor.update_doctor', doctor_id=doctor.id) }}"
+                            class="block px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-primary text-left transition-colors border-b border-slate-50">
+                            <i class="fa-solid fa-pen mr-2"></i> Edit Profile
+                        </a>
+                        <form action="{{ url_for('doctor.delete_doctor', doctor_id=doctor.id) }}" method="POST"
+                            class="block">
+                            <button type="button"
+                                onclick="if(confirm('Are you sure? This will delete the doctor and their user account completely.')) this.form.submit()"
+                                class="w-full block px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 text-left transition-colors">
+                                <i class="fa-solid fa-trash mr-2"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
             <div class="absolute -bottom-10 left-1/2 transform -translate-x-1/2">
                 <div class="h-20 w-20 rounded-full border-4 border-white shadow-md overflow-hidden">
                     <img src="{{ url_for('static', filename='profile_pics/' + doctor.user.image_file) }}"
@@ -41,4 +74,19 @@
     </div>
     {% endfor %}
 </div>
+
+<script>
+    function toggleDropdown(btn) {
+        event.stopPropagation();
+        const menu = btn.nextElementSibling;
+        const isHidden = menu.classList.contains('hidden');
+        document.querySelectorAll('.dropdown-menu').forEach(el => el.classList.add('hidden'));
+        if (isHidden) menu.classList.remove('hidden');
+    }
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.dropdown-container')) {
+            document.querySelectorAll('.dropdown-menu').forEach(el => el.classList.add('hidden'));
+        }
+    });
+</script>
 {% endblock %}
