@@ -1,4 +1,6 @@
-from flask import render_template, url_for, flash, redirect, request, abort
+from flask import render_template, url_for, flash, redirect, request, abort, send_file
+import pandas as pd
+from io import BytesIO
 from app import db
 from app.patient import patient
 from app.patient.forms import PatientForm
@@ -84,3 +86,110 @@ def delete_patient(patient_id):
     db.session.commit()
     flash('Patient has been deleted!', 'success')
     return redirect(url_for('patient.list_patients'))
+
+
+@patient.route("/patient/template")
+@login_required
+def download_patient_template():
+    if current_user.role not in ['admin', 'doctor', 'receptionist']:
+        abort(403)
+    
+    # Create a DataFrame with the required columns
+    columns = ['Name', 'Age', 'Gender', 'Contact', 'Address', 'Medical History']
+    df = pd.DataFrame(columns=columns)
+    
+    # Create a BytesIO buffer to hold the Excel file
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Patients_Template')
+        
+    output.seek(0)
+    
+    return send_file(output, as_attachment=True, download_name="patient_template.xlsx", mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+
+@patient.route("/patient/import", methods=['POST'])
+@login_required
+def import_patients():
+    if current_user.role not in ['admin', 'doctor', 'receptionist']:
+        abort(403)
+        
+    if 'file' not in request.files:
+        flash('No file part', 'danger')
+        return redirect(url_for('patient.list_patients'))
+        
+    file = request.files['file']
+    
+    if file.filename == '':
+        flash('No selected file', 'danger')
+        return redirect(url_for('patient.list_patients'))
+        
+    if file and file.filename.endswith('.xlsx'):
+        try:
+            df = pd.read_excel(file)
+            
+            # Check if required columns exist
+            required_columns = ['Name', 'Age', 'Gender', 'Contact', 'Address', 'Medical History']
+            if not all(col in df.columns for col in required_columns):
+                flash('Invalid file format. Please use the template.', 'danger')
+                return redirect(url_for('patient.list_patients'))
+            
+            count = 0
+            for index, row in df.iterrows():
+                # Check for potentially duplicate patients (simple check by name and contact)
+                # In real world, might need better logic
+                existing_patient = Patient.query.filter_by(name=row['Name'], contact=str(row['Contact'])).first()
+                if existing_patient:
+                    continue # Skip duplicates
+                
+                patient = Patient(
+                    name=row['Name'],
+                    age=row['Age'],
+                    gender=row['Gender'],
+                    contact=str(row['Contact']),
+                    address=row['Address'],
+                    medical_history=row.get('Medical History', '')
+                )
+                db.session.add(patient)
+                count += 1
+                
+            db.session.commit()
+            flash(f'{count} patients imported successfully!', 'success')
+            
+        except Exception as e:
+            flash(f'Error importing file: {str(e)}', 'danger')
+    else:
+        flash('Invalid file type. Please upload an Excel file (.xlsx)', 'danger')
+        
+    return redirect(url_for('patient.list_patients'))
+
+
+@patient.route("/patient/export")
+@login_required
+def export_patients():
+    if current_user.role not in ['admin', 'doctor', 'receptionist']:
+        abort(403)
+        
+    patients = Patient.query.all()
+    
+    data = []
+    for patient in patients:
+        data.append({
+            'Name': patient.name,
+            'Age': patient.age,
+            'Gender': patient.gender,
+            'Contact': patient.contact,
+            'Address': patient.address,
+            'Medical History': patient.medical_history
+        })
+        
+    df = pd.DataFrame(data)
+    
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Patients')
+        
+    output.seek(0)
+    
+    return send_file(output, as_attachment=True, download_name="patients_export.xlsx", mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+

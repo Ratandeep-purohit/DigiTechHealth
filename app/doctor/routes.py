@@ -1,4 +1,6 @@
-from flask import render_template, request, flash, redirect, url_for, abort
+from flask import render_template, request, flash, redirect, url_for, abort, send_file
+import pandas as pd
+from io import BytesIO
 from app.doctor import doctor
 from app.doctor.forms import DoctorForm, AddDoctorForm, UpdateDoctorForm
 from app.models import Doctor, User
@@ -102,7 +104,113 @@ def delete_doctor(doctor_id):
     # We should probably delete the User account too if it's strictly a doctor account.
     user = doctor.user
     db.session.delete(doctor)
-    db.session.delete(user) # Optional: Delete associated user account
+    db.session.delete(user)
     db.session.commit()
     flash('Doctor has been deleted!', 'success')
     return redirect(url_for('doctor.list_doctors'))
+
+
+@doctor.route("/doctor/template")
+@login_required
+def download_doctor_template():
+    if current_user.role != 'admin':
+        abort(403)
+    
+    # Create a DataFrame with the required columns
+    columns = ['Username', 'Email', 'Password', 'Specialization', 'Availability']
+    df = pd.DataFrame(columns=columns)
+    
+    # Create a BytesIO buffer to hold the Excel file
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Doctors_Template')
+        
+    output.seek(0)
+    
+    return send_file(output, as_attachment=True, download_name="doctor_template.xlsx", mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+
+@doctor.route("/doctor/import", methods=['POST'])
+@login_required
+def import_doctors():
+    if current_user.role != 'admin':
+        abort(403)
+        
+    if 'file' not in request.files:
+        flash('No file part', 'danger')
+        return redirect(url_for('doctor.list_doctors'))
+        
+    file = request.files['file']
+    
+    if file.filename == '':
+        flash('No selected file', 'danger')
+        return redirect(url_for('doctor.list_doctors'))
+        
+    if file and file.filename.endswith('.xlsx'):
+        try:
+            df = pd.read_excel(file)
+            
+            # Check if required columns exist
+            required_columns = ['Username', 'Email', 'Password', 'Specialization', 'Availability']
+            if not all(col in df.columns for col in required_columns):
+                flash('Invalid file format. Please use the template.', 'danger')
+                return redirect(url_for('doctor.list_doctors'))
+            
+            count = 0
+            for index, row in df.iterrows():
+                # Check for existing user
+                existing_user = User.query.filter((User.username == row['Username']) | (User.email == row['Email'])).first()
+                if existing_user:
+                    continue # Skip duplicates
+                
+                # Create User
+                user = User(username=row['Username'], email=row['Email'], role='doctor')
+                user.set_password(str(row['Password'])) # Ensure password is string
+                db.session.add(user)
+                db.session.flush() # Get ID
+                
+                # Create Doctor
+                doctor = Doctor(user_id=user.id, 
+                                specialization=row['Specialization'], 
+                                availability=row.get('Availability', 'Mon-Fri 9am-5pm'))
+                db.session.add(doctor)
+                count += 1
+                
+            db.session.commit()
+            flash(f'{count} doctors imported successfully!', 'success')
+            
+        except Exception as e:
+            flash(f'Error importing file: {str(e)}', 'danger')
+    else:
+        flash('Invalid file type. Please upload an Excel file (.xlsx)', 'danger')
+        
+    return redirect(url_for('doctor.list_doctors'))
+
+
+@doctor.route("/doctor/export")
+@login_required
+def export_doctors():
+    if current_user.role != 'admin':
+        abort(403)
+        
+    doctors = Doctor.query.all()
+    
+    data = []
+    for doctor in doctors:
+        data.append({
+            'Username': doctor.user.username,
+            'Email': doctor.user.email,
+            'Specialization': doctor.specialization,
+            'Availability': doctor.availability
+        })
+        
+    df = pd.DataFrame(data)
+    
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Doctors')
+        
+    output.seek(0)
+    
+    return send_file(output, as_attachment=True, download_name="doctors_export.xlsx", mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
